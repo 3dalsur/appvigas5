@@ -1,18 +1,18 @@
 def calcular_viga(datos):
-    rc = datos['rc']
-    fy = datos['fy']
+    rc = float(datos['rc'])
+    fy = float(datos['fy'])
     nombre = datos['nombre']
     ubicacion = datos['ubicacion']
     fecha = datos['fecha']
-    l = datos['l']
-    ce = datos['ce']
-    cd = datos['cd']
-    n = datos['n']
-    q1 = datos['q1']
-    q2 = datos['q2']
-    ns = datos['ns']
-    k = datos['k']
-    j = datos['j']
+    l = float(datos['l'])
+    ce = float(datos['ce'])
+    cd = float(datos['cd'])
+    n = float(datos['n'])
+    q1 = float(datos['q1'])
+    q2 = float(datos['q2'])
+    ns = int(datos['ns'])
+    k = int(datos['k'])
+    j = int(datos['j'])
     p = 1.815
     a = 4.267
     w = 18.2
@@ -25,7 +25,9 @@ def calcular_viga(datos):
     m1 = []
     m2 = []
     m3 = []
-    x = datos['x']
+
+    x = [float(val) for val in datos['x']]
+#    x = datos['x']
     for i in range(ns):
         m1.append(0.5 * q1 * x[i] * (l - x[i]))
         m2.append(0.5 * q2 * x[i] * (l - x[i]))

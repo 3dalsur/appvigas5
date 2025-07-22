@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diseño de Puentes de Viga Metálica</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Programa para Analizar y Diseñar Puentes de Viga Metálica</h1>
+    <form id="bridgeForm">
+        <label for="fecha">Fecha:</label>
+        <input type="date" id="fecha" name="fecha" required><br>
+        <label for="nombre">Nombre del Puente:</label>
+        <input type="text" id="nombre" name="nombre" required><br>
+        <label for="ubicacion">Ubicación:</label>
+        <input type="text" id="ubicacion" name="ubicacion" required><br>
+        <label for="rc">Resistencia Compresión Hormigón (Kg/cm²):</label>
+        <input type="number" id="rc" name="rc" required><br>
+        <label for="fy">Tensión de Fluencia Acero (Kg/cm²):</label>
+        <input type="number" id="fy" name="fy" required><br>
+        <label for="l">L (m):</label>
+        <input type="number" id="l" name="l" required><br>
+        <label for="ce">Coeficiente Camión Diseño CE:</label>
+        <input type="number" id="ce" name="ce" required><br>
+        <label for="cd">Coeficiente Distribución CD:</label>
+        <input type="number" id="cd" name="cd" required><br>
+        <label for="n">N (Ea/Eh):</label>
+        <input type="number" id="n" name="n" required><br>
+        <label for="q1">Cargas Distribuidas (Ton/M) Q1:</label>
+        <input type="number" id="q1" name="q1" required><br>
+        <label for="q2">Q2:</label>
+        <input type="number" id="q2" name="q2" required><br>
+        <label for="ns">Número de Secciones a Diseñar NS:</label>
+        <input type="number" id="ns" name="ns" required><br>
+        <label for="k">Con Losa Colaborante=1, Sin Losa Colaborante=2:</label>
+        <input type="number" id="k" name="k" required><br>
+        <label for="j">Con Alzaprima=1, Sin Alzaprima=2:</label>
+        <input type="number" id="j" name="j" required><br>
+        <button type="submit">Calcular</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('bridgeForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+        
+            const formData = new FormData(this);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+        
+            // Asegúrate de enviar el arreglo x (ajusta según tu lógica)
+            data['x'] = [1, 2, 3, 4];
+        
+            fetch('/calcular', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if(!response.ok) throw new Error('Respuesta del servidor no OK');
+                return response.json();
+            })
+            .then(result => {
+                console.log('Respuesta recibida:', result);
+        
+                let html = `<h3>Datos Generales</h3>
+                    <table border="1" cellpadding="5">
+                        <tr><td><b>Nombre del Puente</b></td><td>${result.nombre}</td></tr>
+                        <tr><td><b>Ubicación</b></td><td>${result.ubicacion}</td></tr>
+                        <tr><td><b>Fecha</b></td><td>${result.fecha}</td></tr>
+                        <tr><td><b>Resist. Hormigón (rc)</b></td><td>${result.rc}</td></tr>
+                        <tr><td><b>Tensión Fluencia Acero (fy)</b></td><td>${result.fy}</td></tr>
+                    </table>`;
+        
+                html += `<h3>Resultados de Momentos</h3>
+                    <table border="1" cellpadding="5">
+                        <tr><th>Sección</th><th>M1</th><th>M2</th><th>M3</th></tr>`;
+        
+                for(let i=0; i < result.m1.length; i++) {
+                    html += `<tr>
+                        <td>${i+1}</td>
+                        <td>${result.m1[i]}</td>
+                        <td>${result.m2[i]}</td>
+                        <td>${result.m3[i]}</td>
+                    </tr>`;
+                }
+                html += '</table>';
+        
+                document.getElementById('result').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = `<p style="color:red;">Error al realizar la solicitud.</p>`;
+            });
+        });
+        </script>
+               
+        
+</body>
+</html>
